@@ -2,14 +2,6 @@
 
 A full local monitoring solution using **Docker Compose** on macOS, providing real-time metrics collection, alerting, and visualization.
 
----
-
-## 🧩 Architecture Overview
-
-![Monitoring Stack Flow](./docs/monitoring-flow.png)
-
-*Replace the above image with your actual diagram in `docs/` folder.*
-
 **Flow Explanation:**
 
 1. **Node Exporter** collects system metrics (CPU, memory, disk).  
