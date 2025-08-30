@@ -92,5 +92,23 @@ git clone https://github.com/<your-username>/observability.git
 cd observability
 
 
+
+
+
+observability/
+├── docker-compose.yml
+├── prometheus/
+│   └── prometheus.yml
+├── alertmanager/
+│   └── alertmanager.yml
+├── grafana/
+├── app1/
+│   ├── app1.py
+│   └── Dockerfile
+├── app2/
+│   ├── app2.py
+│   └── Dockerfile
+└── README.md
+
 docker compose build
 docker compose up -d
