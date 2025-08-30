@@ -90,3 +90,7 @@ Node Exporter http://localhost:9100/metrics
 ```bash
 git clone https://github.com/<your-username>/observability.git
 cd observability
+
+
+docker compose build
+docker compose up -d
