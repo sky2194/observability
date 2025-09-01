@@ -1,0 +1,37 @@
+services:
+  jaeger:
+    image: jaegertracing/all-in-one:1.51
+    container_name: jaeger
+    ports:
+      - "16686:16686"   # Jaeger UI
+      - "6831:6831/udp" # Jaeger Agent
+    networks:
+      - jaeger-net
+
+  app1:
+    build:
+      context: ./app1
+      dockerfile: Dockerfile
+    container_name: app1-jaeger
+    ports:
+      - "8201:8001"
+    depends_on:
+      - jaeger
+    networks:
+      - jaeger-net
+
+  app2:
+    build:
+      context: ./app2
+      dockerfile: Dockerfile
+    container_name: app2-jaeger
+    ports:
+      - "8202:8002"
+    depends_on:
+      - jaeger
+    networks:
+      - jaeger-net
+
+networks:
+  jaeger-net:
+    driver: bridge
