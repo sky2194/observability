@@ -1,0 +1,77 @@
+version: "3.8"
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.9
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "9201:9200"   # host port
+    networks:
+      - efk
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.17.9
+    container_name: kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5602:5601"   # host port
+    depends_on:
+      - elasticsearch
+    networks:
+      - efk
+
+  fluentd:
+    image: fluent/fluentd:v1.17-debian
+    container_name: fluentd
+    platform: linux/amd64           # Fix for M1/M2
+    volumes:
+      - ./fluentd/fluent.conf:/fluentd/etc/fluent.conf
+    ports:
+      - "24225:24224"
+      - "24225:24224/udp"
+    depends_on:
+      - elasticsearch
+    networks:
+      - efk
+
+  app1:
+    build:
+      context: ./app1
+      dockerfile: Dockerfile
+    container_name: app1-efk
+    ports:
+      - "8101:8001"
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: "tcp://host.docker.internal:24225"  # macOS host mapping
+        tag: app1
+    depends_on:
+      - fluentd
+    networks:
+      - efk
+
+  app2:
+    build:
+      context: ./app2
+      dockerfile: Dockerfile
+    container_name: app2-efk
+    ports:
+      - "8102:8002"
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: "tcp://host.docker.internal:24225"
+        tag: app2
+    depends_on:
+      - fluentd
+    networks:
+      - efk
+
+networks:
+  efk:
+    driver: bridge
